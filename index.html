@@ -1,151 +1,243 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cardboard VR - GLTF 互動</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.4.2/aframe.min.js"></script>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-    }
-    #info {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      color: white;
-      background: rgba(0,0,0,0.7);
-      padding: 10px;
-      border-radius: 5px;
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      z-index: 1000;
-      max-width: 300px;
-    }
-    #vr-button {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1000;
-      padding: 15px 30px;
-      background: #ff5722;
-      color: white;
-      border: none;
-      border-radius: 25px;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    }
-    #vr-button:hover {
-      background: #e64a19;
-    }
-    #mesh-list {
-      position: absolute;
-      top: 100px;
-      left: 10px;
-      color: white;
-      background: rgba(0,0,0,0.7);
-      padding: 10px;
-      border-radius: 5px;
-      font-family: monospace;
-      font-size: 12px;
-      z-index: 1000;
-      max-width: 300px;
-      max-height: 400px;
-      overflow-y: auto;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-fullscreen">
+    <title>Cardboard VR - GLTF 互動</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.4.2/aframe.min.js"></script>
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            position: fixed;
+        }
+
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            z-index: 1000;
+            max-width: 300px;
+        }
+
+        #vr-button {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            padding: 15px 30px;
+            background: #ff5722;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        #vr-button:hover {
+            background: #e64a19;
+        }
+
+        #mesh-list {
+            position: absolute;
+            top: 100px;
+            left: 10px;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 1000;
+            max-width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* 自訂 Cursor 樣式 */
+        .custom-cursor {
+            position: absolute;
+            pointer-events: none;
+        }
+    </style>
 </head>
+
 <body>
-  <div id="info">
-    📱 使用說明：<br>
-    1. 點擊下方「進入 VR」按鈕<br>
-    2. 將手機放入 Cardboard<br>
-    3. 轉動頭部環顧四周<br>
-    4. 凝視物體與它們互動
-  </div>
+    <div id="info">
+        📱 使用說明：<br>
+        1. 點擊下方「進入 VR」按鈕<br>
+        2. 將手機放入 Cardboard<br>
+        3. 轉動頭部環顧四周<br>
+        4. 凝視物體與它們互動
+    </div>
 
-  <div id="mesh-list">
-    <strong>GLTF Mesh 列表：</strong><br>
-    <div id="mesh-names">載入中...</div>
-  </div>
+    <div id="mesh-list">
+        <strong>GLTF Mesh 列表：</strong><br>
+        <div id="mesh-names">載入中...</div>
+    </div>
 
-  <button id="vr-button">🥽 進入 VR 模式</button>
+    <button id="vr-button">🥽 進入 VR 模式</button>
 
-  <!-- A-Frame 自訂組件 -->
-  <script src="gltf-interactive-component.js"></script>
+    <!-- A-Frame 自訂組件 -->
+    <script src="gltf-interactive-component.js"></script>
 
-  <a-scene vr-mode-ui="enabled: true" loading-screen="enabled: false">
-    <!-- 天空背景 -->
-    <a-sky color="#87CEEB"></a-sky>
+    <a-scene vr-mode-ui="enabled: true" loading-screen="enabled: false">
+        <!-- 天空背景 -->
+        <a-sky color="#87CEEB"></a-sky>
 
-    <!-- 地板 -->
-    <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" color="#7BC8A4" shadow></a-plane>
+        <!-- 地板 -->
+        <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" color="#7BC8A4" shadow></a-plane>
 
-    <!-- 光源 -->
-    <a-light type="ambient" color="#BBB"></a-light>
-    <a-light type="directional" color="#FFF" intensity="0.6" position="-1 2 1"></a-light>
+        <!-- 光源 -->
+        <a-light type="ambient" color="#BBB"></a-light>
+        <a-light type="directional" color="#FFF" intensity="0.6" position="-1 2 1"></a-light>
 
-    <!-- GLTF 模型範例 (使用 A-Frame 內建的示範模型) -->
-    <!-- 你可以替換 src 為你自己的 GLTF 檔案路徑 -->
-    <a-entity 
-      id="my-model"
-      gltf-model="Model\test.glb"
-      position="0 1 -3"
-      scale="0.5 0.5 0.5"
-      gltf-interactive="
-        interactiveMeshes: view_plane;
-        hoverColor: #FF6B6B;
-        clickColor: #4ECDC4;
-        normalColor: #FFFFFF;
-      ">
-    </a-entity>
+        <!-- GLTF 模型 -->
+        <a-entity id="my-model" 
+            gltf-model="Model\test.glb" 
+            position="0 1 -3" 
+            scale="0.5 0.5 0.5" 
+            gltf-interactive="interactiveMeshes: view_plane">
+        </a-entity>
 
-    <!-- 相機（含 VR 控制） -->
-    <a-entity camera look-controls wasd-controls position="0 1.6 0">
-      <!-- Cardboard 注視游標 -->
-      <a-cursor
-        color="#FF6B6B"
-        fuse="true"
-        fuse-timeout="1500"
-        animation__click="property: scale; startEvents: click; from: 0.1 0.1 0.1; to: 1 1 1; dur: 150"
-        animation__fusing="property: scale; startEvents: fusing; from: 1 1 1; to: 0.1 0.1 0.1; dur: 1500"
-        raycaster="objects: .interactive-mesh">
-      </a-cursor>
-    </a-entity>
-  </a-scene>
+        <!-- 測試動畫的物體 -->
+        <a-box id="test-box" 
+            position="2 1.5 -3" 
+            color="#FF6B6B"
+            click-animation="
+                animationType: bounce;
+                duration: 500;
+            ">
+        </a-box>
 
-  <script>
-    // VR 按鈕功能
-    const vrButton = document.getElementById('vr-button');
-    const scene = document.querySelector('a-scene');
-    const info = document.getElementById('info');
-    const meshList = document.getElementById('mesh-list');
+        <a-sphere id="test-sphere" 
+            position="-2 1.5 -3" 
+            radius="0.5"
+            color="#4ECDC4"
+            click-animation="
+                animationType: pulse;
+                duration: 800;
+            ">
+        </a-sphere>
 
-    vrButton.addEventListener('click', () => {
-      if (scene.hasLoaded) {
-        scene.enterVR();
-      } else {
-        scene.addEventListener('loaded', () => {
-          scene.enterVR();
+        <!-- 相機（含 VR 控制） -->
+        <a-entity id="camera-rig" camera look-controls wasd-controls position="0 1.6 0">
+            <!-- 自訂 Cursor -->
+            <a-entity cursor="fuse: true; fuseTimeout: 1500"
+                      position="0 0 -1"
+                      geometry="primitive: ring; radiusInner: 0.01; radiusOuter: 0.015"
+                      material="color: #FF6B6B; shader: flat; opacity: 0.8"
+                      raycaster="objects: [gltf-interactive], [click-animation]; far: 20"
+                      animation__click="property: scale; startEvents: click; easing: easeInCubic; dur: 150; from: 0.1 0.1 0.1; to: 1 1 1"
+                      animation__fusing="property: scale; startEvents: fusing; easing: easeInCubic; dur: 1500; from: 1 1 1; to: 0.2 0.2 0.2"
+                      animation__mouseleave="property: scale; startEvents: mouseleave; easing: easeInCubic; dur: 300; to: 1 1 1">
+                
+                <!-- Cursor 內圈進度指示器 -->
+                <a-ring position="0 0 0.001"
+                        radius-inner="0.008"
+                        radius-outer="0.012"
+                        material="color: #FFE66D; shader: flat; opacity: 0"
+                        animation__fusing="property: material.opacity; startEvents: fusing; dur: 1500; from: 0; to: 1"
+                        animation__reset="property: material.opacity; startEvents: mouseleave, click; dur: 100; to: 0">
+                </a-ring>
+            </a-entity>
+        </a-entity>
+    </a-scene>
+
+    <script>
+        // 防止 iOS 上方工具列
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                window.scrollTo(0, 1);
+            }, 100);
         });
-      }
-    });
 
-    scene.addEventListener('enter-vr', () => {
-      vrButton.style.display = 'none';
-      info.style.display = 'none';
-      meshList.style.display = 'none';
-    });
+        // 監聽方向改變，重新調整視窗
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                window.scrollTo(0, 1);
+            }, 100);
+        });
 
-    scene.addEventListener('exit-vr', () => {
-      vrButton.style.display = 'block';
-      info.style.display = 'block';
-      meshList.style.display = 'block';
-    });
-  </script>
+        // VR 按鈕功能
+        const vrButton = document.getElementById('vr-button');
+        const scene = document.querySelector('a-scene');
+        const info = document.getElementById('info');
+        const meshList = document.getElementById('mesh-list');
+
+        // 全局事件監聽範例
+        const entity = document.querySelector('#my-model');
+        entity.addEventListener('mesh-clicked', (evt) => {
+            console.log('📍 全局事件 - 點擊了 Mesh:', evt.detail.name);
+            console.log('📍 點擊位置:', evt.detail.point);
+            
+            // 發送自訂全局事件到場景
+            scene.emit('global-mesh-click', {
+                meshName: evt.detail.name,
+                position: evt.detail.point,
+                timestamp: Date.now()
+            });
+        });
+
+        // 監聽全局事件
+        scene.addEventListener('global-mesh-click', (evt) => {
+            console.log('🌍 全局事件觸發:', evt.detail);
+        });
+
+        // 測試物體的點擊事件
+        document.querySelector('#test-box').addEventListener('object-clicked', (evt) => {
+            console.log('🎲 方塊被點擊了！', evt.detail);
+        });
+
+        document.querySelector('#test-sphere').addEventListener('object-clicked', (evt) => {
+            console.log('⚽ 球體被點擊了！', evt.detail);
+        });
+
+        vrButton.addEventListener('click', () => {
+            if (scene.hasLoaded) {
+                scene.enterVR();
+            } else {
+                scene.addEventListener('loaded', () => {
+                    scene.enterVR();
+                });
+            }
+        });
+
+        scene.addEventListener('enter-vr', () => {
+            vrButton.style.display = 'none';
+            info.style.display = 'none';
+            meshList.style.display = 'none';
+        });
+
+        scene.addEventListener('exit-vr', () => {
+            vrButton.style.display = 'block';
+            info.style.display = 'block';
+            meshList.style.display = 'block';
+        });
+    </script>
 </body>
+
 </html>
