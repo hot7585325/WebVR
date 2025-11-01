@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>WebXR 基礎範例 (A-Frame)</title>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+
+    <style>
+        /* 確保頁面沒有邊距，讓 VR 畫面可以填滿整個手機螢幕 */
+        body { margin: 0; overflow: hidden; }
+    </style>
+</head>
+<body>
+
+    <a-scene>
+
+        <a-sky color="#6EBAA7"></a-sky>
+
+        <a-box
+            position="-1 0.5 -3"
+            rotation="0 45 0"
+            color="#FF4545"
+            shadow>
+        </a-box>
+
+        <a-plane
+            position="0 0 -4"
+            rotation="-90 0 0"
+            width="10"
+            height="10"
+            color="#7BC8A4"
+            shadow>
+        </a-plane>
+
+        <a-entity light="type: ambient; color: #BBB"></a-entity>
+        <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="-0.5 1 1"></a-entity>
+
+    </a-scene>
+
+</body>
+</html>
